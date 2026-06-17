@@ -1,0 +1,2 @@
+2026-06-15T10:00:00Z service=bank-web status=ok
+2026-06-15T10:01:00Z service=bank-web status=warn cpu=high
