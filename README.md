@@ -5,11 +5,14 @@
 [![Docs: CC BY 4.0](https://img.shields.io/badge/docs-CC%20BY%204.0-lightgrey)](LICENSE-DOCS)
 
 Внешний **out-of-band коллектор** цифрового двойника CyberCity. Работает на
-хосте (гипервизор / K8s-нода), **снаружи** гостевых VM/контейнеров, read-only, в
-mgmt-плоскости — и потому недосягаем из range-сегмента. Собирает телеметрию
-зондами (файлы, сеть, память, процессы, сисколлы), подписывает события (Ed25519)
-и шлёт в `cybercity-engine` по Kafka как **авторитетный** поток, на котором
-считается scoring. Control-канал — от `cybercity-manage`.
+хосте (гипервизор / K8s-нода), **снаружи** гостевых runtime-целей `{vm, container,
+lite}` (см. umbrella ADR-0004), read-only, в mgmt-плоскости — и потому недосягаем из
+range-сегмента. Собирает телеметрию зондами (файлы, сеть, память, процессы,
+сисколлы; для `lite`-стабов — banner/socket-reachability + heartbeat), подписывает
+события (Ed25519) и шлёт в `cybercity-engine` по Kafka как **авторитетный** поток,
+на котором считается scoring. Control-канал — от `cybercity-manage`. `honeypot` —
+purpose-флаг (наживка) от manage, не collector-концепт; класса «engine-synthesized
+service events» нет (движок — регистратор, не симулятор).
 
 > Канон состава, контрактов и доверительной границы —
 > [`cybercity/COMPOSITION.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/COMPOSITION.md).

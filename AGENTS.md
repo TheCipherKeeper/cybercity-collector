@@ -36,6 +36,11 @@
 - **In-guest никогда не доверен.** Опциональное in-guest обогащение —
   best-effort, **никогда** не источник для scoring. «Агент замолчал» — сам по
   себе сигнал.
+- **Target-агностичен: все runtime-виды единообразно.** Коллектор наблюдает
+  `{vm, container, lite}` (umbrella ADR-0004) одним probe-pipeline; `honeypot` —
+  purpose-флаг от manage, не отдельный режим. Класса «engine-synthesized service
+  events» нет — движок регистратор, не симулятор (всё, что движок знает о цели,
+  приходит подписанным наблюдением).
 - **Crate-имена `ccc-*`.** Старые `ccna-*` / `cybercity-node-agent` сняты;
   бинарник — `cybercity-collector`; env-префикс — `CCC_`.
 

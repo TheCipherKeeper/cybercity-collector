@@ -35,6 +35,12 @@ cybercity-engine
     │  авторитетный поток; на нём считается scoring
 ```
 
+> Тот же probe-pipeline обслуживает все runtime-виды `{vm, container, lite}`
+> (см. umbrella ADR-0004): vm/container — fs/net/mem/proc/syscall; `lite` —
+> banner/socket-reachability + heartbeat. `honeypot` — purpose-флаг от manage,
+> не отдельный поток. Класса «engine-synthesized service events» нет — движок
+> регистратор, не симулятор.
+
 ### Control-канал (от manage к коллектору)
 
 ```text

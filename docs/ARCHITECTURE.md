@@ -15,6 +15,23 @@
 > доверительной границы — в
 > [`cybercity/COMPOSITION.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/COMPOSITION.md).
 
+## Target kinds & probe matrix
+
+Коллектор target-агностичен: он наблюдает все runtime-виды `{vm, container, lite}`
+(см. umbrella ADR-0004) единообразно как out-of-band гости. Набор зондов
+подбирается под вид, но probe-pipeline (зонд → конверт → Kafka → engine) общий:
+
+| `runtime_kind` | Где наблюдается | Зонды |
+|---|---|---|
+| `vm` | гипервизор (Proxmox/ZFS) | fs (ZFS-snapshot ro-mount), net (port-mirror/eBPF), mem (`virsh dump`), proc, syscall |
+| `container` | K8s-нода | overlay2-walk, eBPF-XDP, `/proc/<pid>/mem`, Falco/Tetragon |
+| `lite` | K8s-нода/хост | banner/socket-reachability + минимальный fs (стаб реальный, но лёгкий); heartbeat от stub'а |
+
+`honeypot` — purpose-атрибут (наживка), передаваемый от `cybercity-manage` manifest,
+не collector-концепт: honeypot-цель (обычно `lite`) наблюдается как любая другая.
+Класса «engine-synthesized service events» нет — движок регистратор, не симулятор;
+всё, что движок знает о цели, приходит подписанным наблюдением коллектора.
+
 ## Текущее состояние vs цель (честно)
 
 | | Сейчас | Цель |

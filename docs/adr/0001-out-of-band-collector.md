@@ -60,8 +60,12 @@ CyberCity — кибер-полигон: задача красных — осл�
 ### Negative
 
 - Зонды требуют прав на гипервизоре/узле; часть — привилегированные.
-- Разнородные runtime цели (VM на Proxmox/ZFS vs контейнеры на K8s) требуют
-  разных наборов зондов.
+- Разнородные runtime цели `{vm, container, lite}` (vm — VM на Proxmox/ZFS,
+  container — на K8s, lite — stub-контейнер `cc-lite`) требуют разных наборов
+  зондов: vm/container — fs/net/mem/proc/syscall; lite — banner/socket-reachability
+  + минимальный fs (стаб реальный, но лёгкий). `honeypot` — purpose-атрибут от
+  `cybercity-manage` (manifest), не collector-концепт: коллектор наблюдает
+  honeypot-цель как любую другую. См. umbrella ADR-0004.
 - Состояние кода сейчас — in-guest MVP; переход на out-of-band — отдельный
   заход: зонды, Ed25519-подпись, реальный Kafka-transport, канонический event
   envelope.
@@ -80,6 +84,7 @@ CyberCity — кибер-полигон: задача красных — осл�
 
 - [`cybercity/adr/0002-trust-boundary.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/0002-trust-boundary.md) — доверительная граница (trusted vs best-effort).
 - [`cybercity/adr/0003-collector-rust-out-of-band.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/0003-collector-rust-out-of-band.md) — сквозное решение: Rust + out-of-band.
+- [`cybercity/adr/0004-runtime-kind-vm-container-lite.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/0004-runtime-kind-vm-container-lite.md) — `runtime_kind {vm, container, lite}`; коллектор кроет все виды единообразно; `honeypot` — purpose, не collector-концепт; класса engine-synth-событий нет.
 - [`cybercity/COMPOSITION.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/COMPOSITION.md) — канон состава, «История переименований».
 - [`../ARCHITECTURE.md`](../ARCHITECTURE.md) — внутренняя архитектура (6-crate workspace).
 - [`../DATA_FLOW.md`](../DATA_FLOW.md) — поток данных: зонд → конверт → Kafka → engine.
