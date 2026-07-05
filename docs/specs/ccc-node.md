@@ -1,8 +1,6 @@
 # ccc-node
 
-## Что это
-
-Composition root: бинарник `cybercity-collector`. Композитит все слои, запускает
+Точка сборки: бинарник `cybercity-collector`. Собирает все слои, запускает
 3 tokio-таски, обрабатывает graceful shutdown.
 
 ## Интерфейсы
@@ -17,10 +15,10 @@ Composition root: бинарник `cybercity-collector`. Композитит �
 - Lifecycle: Initializing → Active при старте.
 - mpsc::channel для событий (buffer_size из конфига).
 - 3 tokio-таски:
-  1. **Telemetry collector** — TelemetryCollector::run, шлёт события в channel.
-  2. **Transport** — читает события из channel, шлёт через SecureTransport
+  1. Telemetry collector — TelemetryCollector::run, шлёт события в channel.
+  2. Transport — читает события из channel, шлёт через SecureTransport
      (StdoutTransport) в topic cc.events.\<service_id\>.
-  3. **Command listener** — poll StdoutTransport::receive_command каждые 10с,
+  3. Command listener — poll StdoutTransport::receive_command каждые 10с,
      исполняет через CommandExecutor.
 - Graceful shutdown по SIGINT (ctrl_c).
 - При shutdown: lifecycle → Initializing, abort всех тасок.
@@ -40,11 +38,11 @@ Composition root: бинарник `cybercity-collector`. Композитит �
 ## Ограничения
 
 - Shutdown: abort тасок, не graceful drain (события в channel теряются).
-- Command listener: poll каждые 10с на stub transport — нет реальных команд.
+- Command listener: poll каждые 10с на заглушке — нет реальных команд.
 - Lifecycle при shutdown → Initializing (transitional), не отдельный
   ShuttingDown state.
 
 ## Зависимости
 
-- ccc-core, ccc-host, ccc-telemetry, ccc-kafka, ccc-command
-- tokio, tracing, tracing-subscriber, anyhow
+ccc-core, ccc-host, ccc-telemetry, ccc-kafka, ccc-command
+tokio, tracing, tracing-subscriber, anyhow

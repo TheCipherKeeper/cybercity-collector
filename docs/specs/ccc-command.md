@@ -1,9 +1,7 @@
 # ccc-command
 
-## Что это
-
-Control plane: приём и исполнение команд от cybercity-manage. Проверка
-policy, проверка подписи, tamper detection.
+Приём и исполнение команд от cybercity-manage. Проверка политики,
+проверка подписи, tamper detection.
 
 ## Интерфейсы
 
@@ -58,4 +56,4 @@ pub struct CommandExecutor {
 
 ## Зависимости
 
-- ccc-core, ccc-host, ccc-kafka, tokio, tracing, thiserror, serde_json
+ccc-core, ccc-host, ccc-kafka, tokio, tracing, thiserror, serde_json

@@ -1,9 +1,7 @@
 # ccc-telemetry
 
-## Что это
-
 Оркестрация сбора телеметрии. Циклично опрашивает зонды, нормализует
-наблюдения в события, мультиплексирует источники, отправляет в channel.
+наблюдения в события, отправляет в channel.
 
 ## Интерфейсы
 
@@ -46,11 +44,11 @@ pub enum TelemetryError {
 
 - Чтение observation manifest: активация зондов по конфигу manifest,
   а не только log_paths.
-- Probe-matrix: fs/net/proc/syscall/lite зонды в зависимости от runtime_kind.
+- Зонды fs/net/proc/syscall/lite в зависимости от runtime_kind.
 - Канонический event envelope вместо AgentEvent("log_line").
 - Инкрементальный tail: сохранение offset, чтение только новых строк
   (сейчас перечитывает весь файл каждый тик).
-- Мультиплексирование: параллельный опрос нескольких зондов.
+- Параллельный опрос нескольких зондов.
 - Backpressure: обработка переполнения channel (сейчас send().await блокирует).
 
 ## Ограничения
@@ -62,4 +60,4 @@ pub enum TelemetryError {
 
 ## Зависимости
 
-- ccc-core, ccc-host, tokio, chrono, serde_json, thiserror, tracing
+ccc-core, ccc-host, tokio, chrono, serde_json, thiserror, tracing

@@ -1,18 +1,16 @@
 # ccc-host
 
-## Что это
-
-Read-only доступ к хосту. Единственная точка через которую коллектор
-обращается к файловой системе и другим ресурсам хоста. Защита от path
-traversal, enforcement policy.
+Read-only доступ к хосту. Единственная точка, через которую коллектор
+обращается к файловой системе и ресурсам хоста. Защита от path traversal,
+проверка политики.
 
 ## Интерфейсы
 
 - `HostBridge::new(policy: Policy)` — создание с политикой.
-- `HostBridge::read_file(path) -> Result<Vec<u8>, HostError>` — чтение файла
-  если разрешён policy.can_read_file.
+- `HostBridge::read_file(path) -> Result<Vec<u8>, HostError>` — чтение файла,
+  если разрешён политикой.
 - `HostBridge::list_dir(path) -> Result<Vec<PathBuf>, HostError>` — список
-  записей в директории если разрешён policy.
+  записей в директории, если разрешён политикой.
 - `HostBridge::policy() -> &Policy` — доступ к политике.
 
 ## Типы
@@ -31,8 +29,8 @@ pub struct HostBridge {
 
 ## Что есть
 
-- read_file: нормализация пути → проверка policy → чтение.
-- list_dir: нормализация → проверка policy → чтение директории.
+- read_file: нормализация пути → проверка политики → чтение.
+- list_dir: нормализация → проверка политики → чтение директории.
 - normalize: отклонение `..` компонентов, каноникализация symlink'ов,
   fallback на clean() если canonicalize не работает.
 - PathClean trait для безопасного разрешения `..` без обращения к FS.
@@ -60,4 +58,4 @@ pub struct HostBridge {
 
 ## Зависимости
 
-- ccc-core, tokio, tracing, thiserror
+ccc-core, tokio, tracing, thiserror

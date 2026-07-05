@@ -1,17 +1,15 @@
 # ccc-kafka
 
-## Что это
-
-Transport-слой и доверительная граница. Подпись конверта (Ed25519), отправка
-в Kafka, приём команд. Точка, где наблюдения пересекают доверительную
-границу — подпись утверждает авторство коллектора.
+Transport-слой и доверительная граница. Подпись конверта (Ed25519),
+отправка в Kafka, приём команд. Точка, где наблюдения пересекают
+доверительную границу — подпись утверждает авторство коллектора.
 
 ## Интерфейсы
 
 - `trait Transport` — `send_event(topic, event)` / `receive_command()`.
   Абстракция над брокером, чтобы коллектор работал без реального Kafka.
-- `StdoutTransport` — stub, печатает события в stdout.
-- `SecureTransport<T: Transport>` — обёртка с подписью (placeholder).
+- `StdoutTransport` — заглушка, печатает события в stdout.
+- `SecureTransport<T: Transport>` — обёртка с подписью (пока placeholder).
 - `TopicNames::from_config(cfg)` — генерация имён топиков из service_id.
 
 ## Типы
@@ -57,8 +55,7 @@ pub enum KafkaError {
 - StdoutTransport: печатает JSON события в stdout (через tracing::info).
 - SecureTransport: обёртка, проверяет наличие signature у входящих команд
   (reject если None), но НЕ проверяет саму подпись крипто.
-- TopicNames: из service_id → cc.events.\<service_id\>, cc.commands.\<service_id\>,
-  cc.alerts, cc.audit.
+- TopicNames: из service_id → имена топиков.
 - CommandEnvelope: десериализация команд от manage.
 - Feature-флаг `real` (mock/default): rdkafka + rustls закомментированы как
   заготовка.
@@ -67,8 +64,8 @@ pub enum KafkaError {
 
 - Ed25519 подпись в SecureTransport:
   - key_id + nonce + timestamp в конверте.
-  - replay-protection (nonce + timestamp window).
-  - signing key: per-host, запечатанные (TPM/Secure Enclave) — цель.
+  - Защита от replay (nonce + timestamp window).
+  - Ключ подписи: per-host, запечатанные (TPM/Secure Enclave) — цель.
 - Real Kafka transport (feature `real`):
   - rdkafka + rustls, mTLS, ACL на продюсеров.
   - Реализация Transport для KafkaProducer/Consumer.
@@ -80,9 +77,8 @@ pub enum KafkaError {
 
 ## Ограничения
 
-- Доверительная граница: подпись здесь — акт утверждения авторства.
-  Гости до брокера не достукиваются структурно (mgmt-сегмент без маршрута
-  из range).
+- Подпись здесь — акт утверждения авторства. Гости до брокера не
+  достукиваются структурно (mgmt-сегмент без маршрута из range).
 - StdoutTransport::receive_command() всегда возвращает Ok(None) —
   нет реального poll команд.
 - SecureTransport не делает крипто — только обёртка.
@@ -90,4 +86,4 @@ pub enum KafkaError {
 
 ## Зависимости
 
-- ccc-core, tokio, tracing, thiserror, serde_json, serde, chrono, async-trait
+ccc-core, tokio, tracing, thiserror, serde_json, serde, chrono, async-trait

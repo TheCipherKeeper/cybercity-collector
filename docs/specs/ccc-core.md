@@ -1,21 +1,18 @@
 # ccc-core
 
-## Что это
-
 Доменное ядро: конфигурация, политика доступа, lifecycle, типы событий.
 Владеет сквозными типами, которые используют остальные crate'ы.
 
 ## Интерфейсы
 
 - `Config` — TOML-конфиг с env-override через префикс `CCC_`
-  (`CCC_NODE_ID`, `CCC_SERVICE_ID`, `CCC_KAFKA_BROKER`). Валидация обязательных
-  полей (node_id, service_id).
+  (`CCC_NODE_ID`, `CCC_SERVICE_ID`, `CCC_KAFKA_BROKER`). Валидация
+  обязательных полей (node_id, service_id).
 - `TelemetryConfig` — пути логов, poll_interval_secs, buffer_size.
-- `Policy` / `HostPermission` — что коллектору разрешено читать на хосте и
-  какие kinds команд исполнять.
-- `Lifecycle` / `State` — self-health и состояние жизненного цикла.
-  `record_tamper()` фиксирует попытки несанкционированного действия.
-  При 3+ tamper → State::Locked.
+- `Policy` / `HostPermission` — что коллектору разрешено читать и какие
+  kinds команд исполнять.
+- `Lifecycle` / `State` — self-health, state machine. `record_tamper()`
+  фиксирует попытки несанкционированного действия. При 3+ tamper → Locked.
 - `AgentEvent` — тип события (упрощённый). Цель — канонический event envelope.
 - `NodeIdentity` — node_id, service_id, segment, boot_time.
 
@@ -26,9 +23,9 @@
 ```rust
 pub struct Config {
     pub node_id: String,       // обязательное
-    pub service_id: String,   // обязательное
+    pub service_id: String,    // обязательное
     pub segment: String,
-    pub kafka_broker: String, // default: "localhost:9092"
+    pub kafka_broker: String,  // default: "localhost:9092"
     pub spool_path: String,    // default: "/var/lib/cybercity-agent/spool"
     pub telemetry: TelemetryConfig,
     pub policy: Policy,
@@ -113,7 +110,7 @@ pub struct AgentEvent {
   ```
   Валидация: manifest_version (целое), target_id (непустая), runtime_kind
   (один из vm/container/lite), probes (объект, зависит от runtime_kind).
-  Неизвестные поля игнорируются (forward compat). Пути абсолютные, без `..`.
+  Неизвестные поля игнорируются. Пути абсолютные, без `..`.
 - Config: поддержка observation manifest пути.
 
 ## Ограничения
@@ -126,4 +123,4 @@ pub struct AgentEvent {
 
 ## Зависимости
 
-- tokio, serde, toml, tracing, thiserror, chrono, serde_json
+tokio, serde, toml, tracing, thiserror, chrono, serde_json
