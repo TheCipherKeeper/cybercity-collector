@@ -28,6 +28,9 @@ cargo run --bin cybercity-collector -- config/local.toml
 
 Коллектор читает логи из путей в конфиге и печатает события в stdout.
 
+> config/example.toml указывает `/var/log` — на Windows замените на
+> существующий путь в config/local.toml.
+
 ### Troubleshooting
 
 **cargo run падает на чтении конфига** — проверить путь и TOML. `Config::load`
