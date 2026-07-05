@@ -49,7 +49,11 @@ git pull
 git checkout -b feat/<задача>
 
 # внести изменения
-./scripts/verify.sh    # fmt + clippy + test + build
+cargo fmt --check
+cargo clippy -- -D warnings
+cargo test
+cargo build --release
+
 git commit -m "feat: ..."
 git push
 # открыть PR в dev

@@ -35,7 +35,14 @@ feat/<задача> ← от dev, удаляется после merge
 2. Прочитать `docs/INDEX.md` → `docs/ARCHITECTURE.md` → спек нужного crate'а.
 3. Создать ветку от dev: `git checkout dev && git pull && git checkout -b feat/<задача>`.
 4. Изменить код. Написать тесты по пунктам «Что есть» в спеке.
-5. Запустить `./scripts/verify.sh`. Если fail — чинить, повторить.
+5. Проверить (все 4 команды должны пройти):
+   ```
+   cargo fmt --check
+   cargo clippy -- -D warnings
+   cargo test
+   cargo build --release
+   ```
+   Если любая fail — чинить, повторить.
 6. Обновить спек: перенести реализованное из «Что TODO» в «Что есть».
 7. Обновить BACKLOG: поставить `[x]` на выполненный пункт.
 8. Закоммитить (Conventional Commits, см. ниже).
