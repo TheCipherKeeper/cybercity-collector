@@ -56,7 +56,7 @@ feat/<задача> ← от dev, удаляется после merge
 - Добавлять зависимости без обоснования.
 - Выдавать stub за реальную реализацию. Честно помечать: что placeholder,
   что TODO.
-- Трогать `Cargo.lock`, `config/`, `fixtures/`, `target/`, `.gitignore` без
+- Трогать `Cargo.lock`, `config/`, `target/`, `.gitignore` без
   одобрения.
 
 ## Коммиты

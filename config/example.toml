@@ -6,7 +6,7 @@ spool_path = "/var/lib/cybercity-agent/spool"
 
 [telemetry]
 log_paths = [
-    "./fixtures/logs",
+    "/var/log",
 ]
 poll_interval_secs = 5
 buffer_size = 256
@@ -17,7 +17,7 @@ allowed_command_kinds = ["status", "read_file"]
 
 [[policy.host_permissions]]
 kind = "read_file"
-paths = ["./fixtures/logs", "/var/log"]
+paths = ["/var/log"]
 
 [[policy.host_permissions]]
 kind = "exec_service"
