@@ -4,27 +4,19 @@
 [![License: MIT](https://img.shields.io/badge/code-MIT-green)](LICENSE)
 [![Docs: CC BY 4.0](https://img.shields.io/badge/docs-CC%20BY%204.0-lightgrey)](LICENSE-DOCS)
 
-Внешний **out-of-band коллектор** цифрового двойника CyberCity. Работает на
-хосте (гипервизор / K8s-нода), **снаружи** гостевых runtime-целей `{vm, container,
-lite}` (см. umbrella ADR-0004), read-only, в mgmt-плоскости — и потому недосягаем из
-range-сегмента. Собирает телеметрию зондами (файлы, сеть, память, процессы,
-сисколлы; для `lite`-стабов — banner/socket-reachability + heartbeat), подписывает
-события (Ed25519) и шлёт в `cybercity-engine` по Kafka как **авторитетный** поток,
-на котором считается scoring. Control-канал — от `cybercity-manage`. `honeypot` —
-purpose-флаг (наживка) от manage, не collector-концепт; класса «engine-synthesized
-service events» нет (движок — регистратор, не симулятор).
+Внешний наблюдатель за гостями цифрового двойника CyberCity. Работает на
+хосте (гипервизор или K8s-нода), смотрит на гостей снаружи, только читает.
+Подписывает наблюдения (Ed25519) и отправляет в `cybercity-engine` через
+Kafka. Команды получает от `cybercity-manage`.
 
-> Канон состава, контрактов и доверительной границы —
-> [`cybercity/COMPOSITION.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/COMPOSITION.md).
+Ключевое свойство: коллектор недосягаем из range-сегмента — наблюдение
+tamper-proof по конструкции.
 
 ## Статус
 
-**Каркас в переходе.** Текущий код — ещё in-guest MVP из эпохи
-`cybercity-agents` (tail логов / stub-transport / placeholder-подпись).
-Рефакторинг зондов в out-of-band, настоящая Ed25519-подпись и реальный
-Kafka-transport (mTLS) — в дорожной карте (см. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)).
-Имена уже приведены к коллектору: crate'ы `ccna-*` → `ccc-*`, бинарник
-`cybercity-node-agent` → `cybercity-collector`, env-префикс `CCNA_` → `CCC_`.
+Каркас в переходе. Текущий код — in-guest MVP (tail логов, печать в stdout,
+placeholder-подпись). Цель — out-of-band зонды, настоящая криптография,
+реальный Kafka. Подробнее — в `docs/BACKLOG.md` и спеках crate'ов.
 
 ## Быстрый старт
 
@@ -34,17 +26,36 @@ cp config/example.toml config/local.toml
 cargo run --bin cybercity-collector -- config/local.toml
 ```
 
-В текущем MVP коллектор читает логи из разрешённых `policy.host_permissions`
-и печатает события в stdout (вместо Kafka — `StdoutTransport`).
+Коллектор читает логи из путей в конфиге и печатает события в stdout.
 
 ## Документация
 
-- [`AGENTS.md`](AGENTS.md) — governance: иерархия, принципы, правила для агента.
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — внутренняя архитектура + поток данных (6-crate workspace).
-- [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — сборка, запуск, тестирование.
-- [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/) — архитектурные решения (все ADR живут в хабе).
+| Файл | Что |
+|---|---|
+| `AGENTS.md` | Правила работы: ветвление, коммиты, что можно/нельзя |
+| `docs/INDEX.md` | Карта документации |
+| `docs/ARCHITECTURE.md` | Архитектура: слои, потоки данных, доверительная граница |
+| `docs/BACKLOG.md` | Очередь задач |
+| `docs/specs/` | Контракты crate'ов (по одному файлу на crate) |
+| `docs/DEVELOPMENT.md` | Сборка, тесты, troubleshooting |
 
-Контрибьютинг — см. [`AGENTS.md`](AGENTS.md) и [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+Архитектурные решения (ADR) — в хабе [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/).
+
+## Разработка
+
+```bash
+git checkout dev
+git pull
+git checkout -b feat/<задача>
+
+# внести изменения
+./scripts/verify.sh    # fmt + clippy + test + build
+git commit -m "feat: ..."
+git push
+# открыть PR в dev
+```
+
+Полный цикл — в `AGENTS.md`. Задачи — в `docs/BACKLOG.md`.
 
 ## Лицензия
 
