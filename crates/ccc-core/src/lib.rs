@@ -1,10 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fmt;
 use std::path::Path;
 use thiserror::Error;
-use tracing::{info, warn};
 
 pub mod lifecycle;
 pub mod policy;
@@ -50,8 +47,8 @@ impl Config {
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, ConfigError> {
         let text = std::fs::read_to_string(path.as_ref())
             .map_err(|e| ConfigError(format!("failed to read {:?}: {e}", path.as_ref())))?;
-        let mut cfg: Config = toml::from_str(&text)
-            .map_err(|e| ConfigError(format!("failed to parse TOML: {e}")))?;
+        let mut cfg: Config =
+            toml::from_str(&text).map_err(|e| ConfigError(format!("failed to parse TOML: {e}")))?;
         cfg.merge_env();
         cfg.validate()?;
         Ok(cfg)
@@ -109,7 +106,12 @@ pub struct AgentEvent {
 }
 
 impl AgentEvent {
-    pub fn new(node_id: String, service_id: String, kind: impl Into<String>, payload: impl Serialize) -> Self {
+    pub fn new(
+        node_id: String,
+        service_id: String,
+        kind: impl Into<String>,
+        payload: impl Serialize,
+    ) -> Self {
         Self {
             ts: Utc::now(),
             node_id,

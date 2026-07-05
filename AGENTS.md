@@ -31,14 +31,16 @@ feat/<задача> ← от dev, удаляется после merge
 
 ## Рабочий цикл
 
-1. Прочитать `docs/INDEX.md` → `docs/ARCHITECTURE.md` → спек нужного crate'а.
-2. Создать ветку от dev: `git checkout dev && git pull && git checkout -b feat/<задача>`.
-3. Изменить код.
-4. Проверить: `cargo build && cargo test && cargo fmt --check && cargo clippy -- -D warnings`.
-5. Обновить спек: перенести реализованное из «Что TODO» в «Что есть».
-6. Закоммитить (Conventional Commits, см. ниже).
-7. Запушить, открыть PR в `dev`.
-8. После merge — ветка удаляется.
+1. Прочитать `docs/BACKLOG.md` — взять первый невыполненный пункт.
+2. Прочитать `docs/INDEX.md` → `docs/ARCHITECTURE.md` → спек нужного crate'а.
+3. Создать ветку от dev: `git checkout dev && git pull && git checkout -b feat/<задача>`.
+4. Изменить код. Написать тесты по пунктам «Что есть» в спеке.
+5. Запустить `./scripts/verify.sh`. Если fail — чинить, повторить.
+6. Обновить спек: перенести реализованное из «Что TODO» в «Что есть».
+7. Обновить BACKLOG: поставить `[x]` на выполненный пункт.
+8. Закоммитить (Conventional Commits, см. ниже).
+9. Запушить, открыть PR в `dev`.
+10. После merge — ветка удаляется.
 
 ## Что можно
 

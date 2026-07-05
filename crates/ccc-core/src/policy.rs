@@ -20,9 +20,7 @@ impl Default for Policy {
                 paths: vec!["/var/log".into()],
             }],
             allow_telemetry: true,
-            allowed_command_kinds: ["status".into(), "read_file".into()]
-                .into_iter()
-                .collect(),
+            allowed_command_kinds: ["status".into(), "read_file".into()].into_iter().collect(),
         }
     }
 }

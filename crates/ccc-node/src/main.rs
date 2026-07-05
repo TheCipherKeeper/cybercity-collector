@@ -18,7 +18,10 @@ async fn main() -> anyhow::Result<()> {
     info!("loading config from {}", config_path);
     let config = Config::load(&config_path)?;
     let identity = NodeIdentity::from_config(&config);
-    info!("collector starting: {} / {}", identity.node_id, identity.service_id);
+    info!(
+        "collector starting: {} / {}",
+        identity.node_id, identity.service_id
+    );
 
     let lifecycle = Arc::new(Lifecycle::new(State::Initializing));
     let policy = Arc::new(config.policy.clone());
@@ -30,7 +33,11 @@ async fn main() -> anyhow::Result<()> {
     let (event_tx, mut event_rx) = mpsc::channel(config.telemetry.buffer_size);
 
     // Telemetry collector task.
-    let telemetry = TelemetryCollector::new(config.telemetry.clone(), HostBridge::new(config.policy.clone()), event_tx);
+    let telemetry = TelemetryCollector::new(
+        config.telemetry.clone(),
+        HostBridge::new(config.policy.clone()),
+        event_tx,
+    );
     let node_id = identity.node_id.clone();
     let service_id = identity.service_id.clone();
     let telemetry_handle = tokio::spawn(async move {

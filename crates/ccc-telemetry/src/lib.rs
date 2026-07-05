@@ -32,7 +32,10 @@ pub struct TelemetryCollector {
 
 impl TelemetryCollector {
     pub fn new(
-        config: TelemetryConfig, bridge: HostBridge, sender: mpsc::Sender<AgentEvent>) -> Self {
+        config: TelemetryConfig,
+        bridge: HostBridge,
+        sender: mpsc::Sender<AgentEvent>,
+    ) -> Self {
         Self {
             config,
             bridge,
@@ -44,7 +47,10 @@ impl TelemetryCollector {
         let mut interval = time::interval(Duration::from_secs(self.config.poll_interval_secs));
         interval.set_missed_tick_behavior(time::MissedTickBehavior::Skip);
 
-        info!("telemetry collector started for {} paths", self.config.log_paths.len());
+        info!(
+            "telemetry collector started for {} paths",
+            self.config.log_paths.len()
+        );
 
         loop {
             interval.tick().await;
@@ -68,7 +74,13 @@ impl TelemetryCollector {
         } else if path.is_dir() {
             let entries = self.bridge.list_dir(path).await?;
             for entry in entries {
-                if entry.is_file() && !entry.file_name().unwrap_or_default().to_string_lossy().starts_with('.') {
+                if entry.is_file()
+                    && !entry
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_string_lossy()
+                        .starts_with('.')
+                {
                     self.tail_file(&entry, node_id, service_id).await?;
                 }
             }

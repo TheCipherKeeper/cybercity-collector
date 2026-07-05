@@ -25,11 +25,7 @@ pub struct CommandExecutor {
 }
 
 impl CommandExecutor {
-    pub fn new(
-        policy: Arc<Policy>,
-        bridge: Arc<HostBridge>,
-        lifecycle: Arc<Lifecycle>,
-    ) -> Self {
+    pub fn new(policy: Arc<Policy>, bridge: Arc<HostBridge>, lifecycle: Arc<Lifecycle>) -> Self {
         Self {
             policy,
             bridge,
@@ -38,10 +34,7 @@ impl CommandExecutor {
     }
 
     /// Execute a command from the engine if it is allowed and (placeholder) signed.
-    pub async fn execute(
-        &self,
-        cmd: CommandEnvelope,
-    ) -> Result<AgentEvent, CommandError> {
+    pub async fn execute(&self, cmd: CommandEnvelope) -> Result<AgentEvent, CommandError> {
         if !self.policy.can_run_command(&cmd.kind) {
             warn!("rejecting unauthorized command kind: {}", cmd.kind);
             self.lifecycle.record_tamper();
@@ -60,9 +53,7 @@ impl CommandExecutor {
         }
     }
 
-    fn handle_status(&self,
-        cmd: CommandEnvelope,
-    ) -> Result<AgentEvent, CommandError> {
+    fn handle_status(&self, cmd: CommandEnvelope) -> Result<AgentEvent, CommandError> {
         Ok(AgentEvent::new(
             "*".into(),
             cmd.service_id,
@@ -75,10 +66,7 @@ impl CommandExecutor {
         ))
     }
 
-    async fn handle_read_file(
-        &self,
-        cmd: CommandEnvelope,
-    ) -> Result<AgentEvent, CommandError> {
+    async fn handle_read_file(&self, cmd: CommandEnvelope) -> Result<AgentEvent, CommandError> {
         let path = cmd
             .payload
             .get("path")
