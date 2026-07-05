@@ -40,10 +40,11 @@ cargo run --bin cybercity-collector -- config/local.toml
 ## Документация
 
 - [`AGENTS.md`](AGENTS.md) — governance: иерархия, принципы, правила для агента.
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — внутренняя архитектура (6-crate workspace).
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — внутренняя архитектура + поток данных (6-crate workspace).
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — сборка, запуск, тестирование.
-- [`docs/DATA_FLOW.md`](docs/DATA_FLOW.md) — поток данных: зонд → конверт → Kafka → engine.
-- [`docs/adr/`](docs/adr/) — локальные архитектурные решения.
+- [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/) — архитектурные решения (все ADR живут в хабе).
+
+Контрибьютинг — см. [`AGENTS.md`](AGENTS.md) и [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Лицензия
 

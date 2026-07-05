@@ -40,9 +40,7 @@ cybercity-collector/
 ├── fixtures/                         # тестовые данные логов
 └── docs/                             # документация
     ├── ARCHITECTURE.md
-    ├── DEVELOPMENT.md
-    ├── DATA_FLOW.md
-    └── adr/
+    └── DEVELOPMENT.md
 ```
 
 ## Конфигурация
@@ -131,7 +129,7 @@ feat: add zfs-snapshot fs probe
 fix: reject path traversal in HostBridge
 docs: update ARCHITECTURE.md with probe matrix
 refactor: extract envelope signing into SecureTransport
-adr: record out-of-band decision as ADR-0001
+docs: record out-of-band decision as hub ADR-0003
 ```
 
 Breaking changes включают `BREAKING CHANGE:` в тело. Summary line — английский
@@ -139,9 +137,13 @@ Breaking changes включают `BREAKING CHANGE:` в тело. Summary line �
 
 ## Процесс ADR
 
-Если изменение затрагивает архитектурное решение:
+Все ADR живут **только в хабе** `cybercity/adr/` (см. hub
+[`adr/0005-adr-centralized-in-hub.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/0005-adr-centralized-in-hub.md));
+в этом репозитории `docs/adr/` не ведётся. Если изменение затрагивает
+архитектурное решение:
 
-1. Написать или обновить ADR в `docs/adr/`.
+1. Написать или обновить ADR в хабе `cybercity/adr/` (индекс —
+   [`cybercity/adr/README.md`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/README.md)).
 2. Сослаться на него из `docs/ARCHITECTURE.md`.
 3. Старые ADR помечать `Superseded`, а не удалять.
 
@@ -170,6 +172,5 @@ cargo run --bin cybercity-collector -- config/local.toml
 ## Связанные документы
 
 - [`AGENTS.md`](../AGENTS.md) — правила для AI-агентов.
-- [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) — внутренняя архитектура.
-- [`docs/DATA_FLOW.md`](DATA_FLOW.md) — поток данных.
-- [`docs/adr/`](adr/) — локальные ADR.
+- [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) — внутренняя архитектура + поток данных.
+- [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/) — архитектурные решения (все ADR в хабе).
