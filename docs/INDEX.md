@@ -23,7 +23,6 @@
 | specs/ccc-kafka.md | Transport, SecureTransport, подпись, топики |
 | specs/ccc-command.md | CommandExecutor, проверка policy, tamper detection |
 | specs/ccc-node.md | Точка сборки, 3 tokio-таски, graceful shutdown |
-| DEVELOPMENT.md | Сборка, запуск, тестирование, troubleshooting |
 
 ## Как работать со спеками
 

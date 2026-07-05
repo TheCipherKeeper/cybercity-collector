@@ -28,6 +28,30 @@ cargo run --bin cybercity-collector -- config/local.toml
 
 Коллектор читает логи из путей в конфиге и печатает события в stdout.
 
+### Troubleshooting
+
+**cargo run падает на чтении конфига** — проверить путь и TOML. `Config::load`
+требует непустые `node_id` и `service_id` (или env `CCC_NODE_ID` / `CCC_SERVICE_ID`).
+
+**Зонды не возвращают данные** — `ccc-telemetry` читает только пути из
+`telemetry.log_paths`, разрешённые `policy.host_permissions`. Проверить, что
+пути существуют и перечислены в `[[policy.host_permissions]]` с
+`kind = "read_file"`.
+
+### Конфигурация
+
+TOML, грузится из первого аргумента CLI (default: `config/example.toml`).
+Env-override через префикс `CCC_`:
+
+| Поле | Env |
+|---|---|
+| node_id | CCC_NODE_ID |
+| service_id | CCC_SERVICE_ID |
+| kafka_broker | CCC_KAFKA_BROKER |
+
+`policy.host_permissions` ограничивает, какие пути читать (`read_file`).
+`policy.allowed_command_kinds` ограничивает kinds команд от manage.
+
 ## Документация
 
 | Файл | Что |
@@ -37,7 +61,6 @@ cargo run --bin cybercity-collector -- config/local.toml
 | `docs/ARCHITECTURE.md` | Архитектура: слои, потоки данных, доверительная граница |
 | `docs/BACKLOG.md` | Очередь задач |
 | `docs/specs/` | Контракты crate'ов (по одному файлу на crate) |
-| `docs/DEVELOPMENT.md` | Сборка, тесты, troubleshooting |
 
 Архитектурные решения (ADR) — в хабе [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/).
 
