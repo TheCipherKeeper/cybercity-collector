@@ -5,7 +5,7 @@
 
 ## P1 — фундамент
 
-- [x] [ccc-core] Убрать unused imports (HashMap, fmt, tracing) — blocking для verify.sh
+- [x] [ccc-core] Убрать unused imports (HashMap, fmt, tracing)
 - [ ] [ccc-core] Канонический event envelope → зависит от: ничего
 - [ ] [ccc-core] Observation manifest: типы + валидация → зависит от: ничего
 - [ ] [ccc-telemetry] Инкрементальный tail с offset → зависит от: ничего
