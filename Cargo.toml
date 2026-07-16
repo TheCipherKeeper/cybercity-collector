@@ -1,21 +1,11 @@
-[workspace]
-members = [
-    "crates/ccc-core",
-    "crates/ccc-host",
-    "crates/ccc-telemetry",
-    "crates/ccc-kafka",
-    "crates/ccc-command",
-    "crates/ccc-node",
-]
-resolver = "2"
-
-[workspace.package]
+[package]
+name = "cybercity-collector"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/TheCipherKeeper/cybercity-collector"
 
-[workspace.dependencies]
+[dependencies]
 tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "sync", "time", "fs", "signal"] }
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.8"

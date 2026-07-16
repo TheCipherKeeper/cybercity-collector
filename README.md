@@ -16,7 +16,7 @@ tamper-proof по конструкции.
 
 Каркас в переходе. Текущий код — in-guest MVP (tail логов, печать в stdout,
 placeholder-подпись). Цель — out-of-band зонды, настоящая криптография,
-реальный Kafka. Подробнее — в `docs/BACKLOG.md` и спеках crate'ов.
+реальный Kafka. Подробнее — в `docs/ARCHITECTURE.md` и спецификациях компонентов.
 
 ## Быстрый старт
 
@@ -62,7 +62,7 @@ Env-override через префикс `CCC_`:
 | `AGENTS.md` | Правила работы: ветвление, коммиты, что можно/нельзя |
 | `docs/INDEX.md` | Карта документации |
 | `docs/ARCHITECTURE.md` | Архитектура: слои, потоки данных, доверительная граница |
-| `docs/BACKLOG.md` | Очередь задач |
+| `docs/specs/collector.md` | Каноническая спецификация модуля |
 | `docs/specs/` | Контракты crate'ов (по одному файлу на crate) |
 
 Архитектурные решения (ADR) — в хабе [`cybercity/adr/`](https://github.com/TheCipherKeeper/cybercity/blob/main/adr/).
@@ -70,7 +70,7 @@ Env-override через префикс `CCC_`:
 ## Разработка
 
 ```bash
-git checkout dev
+git checkout main
 git pull
 git checkout -b feat/<задача>
 
@@ -82,10 +82,10 @@ cargo build --release
 
 git commit -m "feat: ..."
 git push
-# открыть PR в dev
+# открыть PR в main
 ```
 
-Полный цикл — в `AGENTS.md`. Задачи — в `docs/BACKLOG.md`.
+Полный цикл задаёт закреплённая методология. Задачи находятся в `BACKLOG.md` хаба.
 
 ## Лицензия
 

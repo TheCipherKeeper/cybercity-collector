@@ -60,86 +60,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ccc-command"
-version = "0.1.0"
-dependencies = [
- "ccc-core",
- "ccc-host",
- "ccc-kafka",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ccc-core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "toml",
- "tracing",
-]
-
-[[package]]
-name = "ccc-host"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "ccc-core",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ccc-kafka"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "ccc-core",
- "chrono",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ccc-node"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "ccc-command",
- "ccc-core",
- "ccc-host",
- "ccc-kafka",
- "ccc-telemetry",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "ccc-telemetry"
-version = "0.1.0"
-dependencies = [
- "ccc-core",
- "ccc-host",
- "chrono",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -164,6 +84,22 @@ name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
+
+[[package]]
+name = "cybercity-collector"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "toml",
+ "tracing",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "equivalent"

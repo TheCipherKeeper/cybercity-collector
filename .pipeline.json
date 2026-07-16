@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "lint": [["cargo", "fmt", "--check"], ["cargo", "clippy", "--", "-D", "warnings"]],
+  "tests": [["cargo", "test", "--locked"]],
+  "build": {
+    "commands": [["cargo", "build", "--release", "--locked"]],
+    "outputs": ["target/release/cybercity-collector"]
+  },
+  "deploy": [
+    ["python", "tools/deploy.py", "start", "{artifact_dir}", "{commit}"],
+    ["python", "tools/deploy.py", "readiness", "{artifact_dir}", "{commit}"],
+    ["python", "tools/deploy.py", "smoke", "{artifact_dir}", "{commit}"]
+  ]
+}

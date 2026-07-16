@@ -1,20 +1,38 @@
+# .gitignore сервиса. Артефакты сборки и кэши — не коммитить.
+
+# Окружение
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Go
+bin/
+*.exe
+*.test
+
 # Rust
-/target
-**/*.rs.bk
+target/
 
-# IDEs
-.idea/
+# TypeScript / Node
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+coverage/
+
+# IDE / OS
 .vscode/
-*.swp
-*.swo
-
-# OS
+.idea/
 .DS_Store
-Thumbs.db
 
-# Local config with secrets
-config/local.toml
-config/secrets/
-*.pem
-*.key
-*.crt
+verification.json
+.deploy/
+.evidence/*
+!.evidence/README.md

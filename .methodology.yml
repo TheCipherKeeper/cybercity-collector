@@ -1,0 +1,6 @@
+schema_version: 1
+repository_type: service
+methodology_ref: 5c7a3e82c8ad2dfcd0aacdce8bcdc9748efb8f3b
+service_name: cybercity_collector
+service_language: rust
+service_modules: collector
