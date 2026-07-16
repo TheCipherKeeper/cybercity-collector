@@ -1,0 +1,22 @@
+services:
+  broker:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.1
+    command: ["redpanda", "start", "--overprovisioned", "--smp", "1", "--memory", "1G"]
+    ports: ["9092:9092"]
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  collector:
+    build: { context: . }
+    environment:
+      CCC_NODE_ID: collector-local
+      CCC_SERVICE_ID: cybercity-local
+      CCC_KAFKA_BROKER: broker:9092
+      RUST_LOG: info
+    depends_on:
+      broker:
+        condition: service_healthy
+    restart: unless-stopped

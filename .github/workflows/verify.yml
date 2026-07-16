@@ -1,0 +1,203 @@
+name: product-pipeline
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+
+concurrency:
+  group: product-pipeline-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Verify policy
+        run: uv run .methodology-policy/tools/verify/verify.py --root ${{ github.workspace }} --methodology-ref "${{ vars.METHODOLOGY_VERSION }}" --commit "${{ github.event.pull_request.head.sha }}" --report verification.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification
+          path: verification.json
+
+  lint:
+    needs: policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Run lint
+        run: uv run .methodology-policy/tools/pipeline/run.py lint --commit "${{ github.event.pull_request.head.sha }}"
+
+  tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Run tests
+        run: uv run .methodology-policy/tools/pipeline/run.py tests --commit "${{ github.event.pull_request.head.sha }}"
+
+  review:
+    needs: tests
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REVIEWER: ${{ vars.AGENT_REVIEWER_LOGIN }}
+      HUMAN_REVIEWER: ${{ vars.HUMAN_REVIEWER_LOGIN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Read reviews
+        run: gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews" > reviews.json
+      - name: Read labels
+        run: gh pr view "${{ github.event.pull_request.html_url }}" --json labels > labels.json
+      - name: Verify independent approval
+        run: uv run .methodology-policy/tools/pipeline/run.py review --reviews reviews.json --labels labels.json --reviewer "$REVIEWER" --human-reviewer "$HUMAN_REVIEWER" --author "${{ github.event.pull_request.user.login }}" --commit "${{ github.event.pull_request.head.sha }}"
+
+  build:
+    needs: review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Build product
+        run: uv run .methodology-policy/tools/pipeline/run.py build --commit "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.event.pull_request.head.sha }}
+          path: .pipeline/product.zip
+          include-hidden-files: true
+
+  artifact:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-${{ github.event.pull_request.head.sha }}
+          path: .pipeline
+      - name: Record artifact digest
+        run: uv run .methodology-policy/tools/pipeline/run.py artifact --commit "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: product-${{ github.event.pull_request.head.sha }}
+          path: |
+            .pipeline/product.zip
+            .pipeline/product.zip.sha256
+            .pipeline/artifact.json
+          include-hidden-files: true
+
+  merge:
+    needs: artifact
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      commit: ${{ steps.merge.outputs.commit }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Squash merge
+        run: gh pr merge "$PR_URL" --squash --delete-branch
+      - id: merge
+        name: Record merge commit
+        run: |
+          merge_commit="$(gh pr view "$PR_URL" --json mergeCommit --jq '.mergeCommit.oid')"
+          test -n "$merge_commit"
+          echo "commit=$merge_commit" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: merge
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    environment: ${{ contains(github.event.pull_request.labels.*.name, 'risk:critical') && 'critical-test' || 'test' }}
+    env:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.METHODOLOGY_REPOSITORY }}
+          ref: ${{ vars.METHODOLOGY_VERSION }}
+          path: .methodology-policy
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: product-${{ github.event.pull_request.head.sha }}
+          path: .pipeline
+      - name: Deploy merge commit
+        run: uv run .methodology-policy/tools/pipeline/run.py deploy --commit "${{ needs.merge.outputs.commit }}" --artifact .pipeline/product.zip
