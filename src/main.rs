@@ -1,5 +1,5 @@
 mod collector;
 
-fn main() {
-    collector::adapters::outbound::runtime::run();
+fn main() -> anyhow::Result<()> {
+    collector::adapters::outbound::runtime::run()
 }

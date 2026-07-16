@@ -7,15 +7,8 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 use tracing::{error, info};
 
-pub fn run() {
-    if let Err(error) = run_inner() {
-        error!("collector failed: {}", error);
-        std::process::exit(1);
-    }
-}
-
 #[tokio::main]
-async fn run_inner() -> anyhow::Result<()> {
+pub async fn run() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     let config_path = std::env::args()
@@ -34,6 +27,12 @@ async fn run_inner() -> anyhow::Result<()> {
     let policy = Arc::new(config.policy.clone());
     let bridge = Arc::new(HostBridge::new(config.policy.clone()));
     let topics = TopicNames::from_config(&config);
+    info!(
+        broker = %config.kafka_broker,
+        events_topic = %topics.events,
+        commands_topic = %topics.commands,
+        "transport initialized"
+    );
 
     lifecycle.set(State::Active);
 
