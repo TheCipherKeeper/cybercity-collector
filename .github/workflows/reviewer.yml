@@ -1,0 +1,32 @@
+name: reviewer
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Независимое ревью отдельной сессией агента-ревьюера. Ревью постит GitHub App
+# (бот), установленный на репозитории; его логин задан в AGENT_REVIEWER_LOGIN.
+# App-события дёргают pull_request_review, поэтому продуктовый конвейер
+# перезапускает стадию review и подхватывает APPROVED. Обязательные проверки
+# policy/lint/tests/build/artifact остаются самостоятельными воротами слияния.
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint App installation token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.REVIEW_APP_ID }}
+          private-key: ${{ secrets.REVIEW_APP_PRIVATE_KEY }}
+      - name: Submit independent APPROVED review
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          gh api -X POST "repos/$REPO/pulls/$PR/reviews" \
+            -f event=APPROVE \
+            -f commit_id="$SHA" \
+            -f body="Независимое ревью отдельной сессией агента-ревьюера (GitHub App bot). Проверки policy/lint/tests/build/artifact остаются обязательными воротами."
